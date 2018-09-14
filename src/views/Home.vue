@@ -1,19 +1,21 @@
 <template>
     <div class="layout">
-        <Header class="header">喜报生成工具</Header>
+        <Header class="header">货报生成工具</Header>
         <Content class="content">
             <Row class="title">
                 <Col span="12">
                     <Button @click="addItem">新增</Button>
+                    &nbsp;&nbsp;点击新增按钮即可新增一条货报
                 </Col>
                 <Col span="12">
-                    <Button>下载</Button>
+                    <Button @click="download">下载</Button>
+                    &nbsp;&nbsp;编辑完成后点击下载然后把生成的JSON文件发给我
                 </Col>
             </Row>
             <Row style="margin-top: 10px">
                 <Col span="12">
                     <Scroll :height="height">
-                        <Item :itemID="item" @itemSave="itemSave" v-for="(item, index) in formItems"></Item>
+                        <Item :itemID="item" @itemSave="itemSave" v-for="(item, index) in formItems" :key="index"></Item>
                     </Scroll>
                 </Col>
                 <Col class="show" span="12">
@@ -26,7 +28,7 @@
                                 <div class="phone">
                                     <div class="main">
                                         <div class="scroll-box">
-                                            <ShowItem :item="item" v-for="(item, index) in data"></ShowItem>
+                                            <ShowItem :item="item" v-for="(item, index) in data" :key="index"></ShowItem>
                                         </div>
                                     </div>
                                 </div>
@@ -61,15 +63,30 @@ export default class Home extends Vue {
             this.data[index] = {...item};
             this.data = [...this.data];
         } else {
-            const curItem = {...item}
+            const curItem = {...item};
             this.data.push(curItem);
         }
     }
     private addItem(): void {
-        if(this.formItems.length < 10) {
-            this.formItems.push(`formItem${this.formItems.length}`);
+        if (this.formItems.length < 10) {
+            this.formItems.push(`formItem${this.formItems.length + 1}`);
         } else {
-            (this as any).$Message.error('最多十篇哦')
+            (this as any).$Message.error('最多十篇哦');
+        }
+    }
+    private download(): void {
+        if (this.data.length > 0) {
+            const filename = 'data.json';
+            const eleLink = document.createElement('a');
+            eleLink.download = filename;
+            eleLink.style.display = 'none';
+            const blob = new Blob([JSON.stringify(this.data)]);
+            eleLink.href = URL.createObjectURL(blob);
+            document.body.appendChild(eleLink);
+            eleLink.click();
+            document.body.removeChild(eleLink);
+        } else {
+            (this as any).$Message.error('至少一条数据才能下载哦');
         }
     }
     private created() {

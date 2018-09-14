@@ -1,6 +1,6 @@
 # GleefulReport
 
->喜报编译模板
+>货报编译模板
 
 ## Project setup
 ```

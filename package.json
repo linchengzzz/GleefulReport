@@ -1,6 +1,6 @@
 {
-  "name": "repost",
-  "version": "0.1.0",
+  "name": "Report",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -9,6 +9,7 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
+    "cropperjs": "^1.4.1",
     "iview": "^3.1.0",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
@@ -32,6 +33,8 @@
       "autoprefixer": {}
     }
   },
+  "author": "linchengzzz",
+  "license": "MIT",
   "browserslist": [
     "> 1%",
     "last 2 versions",

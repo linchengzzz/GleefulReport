@@ -1,5 +1,5 @@
 <template>
-    <div class="item">
+    <div class="item" @click="open">
         <article class="art-item">
             <header>
                 {{item.title}}
@@ -13,7 +13,7 @@
                 </span>
                 &nbsp;&nbsp;
                 <span>
-                    {{item.reading}}
+                   阅读量 {{item.reading}}
                 </span>
             </footer>
         </article>
@@ -28,6 +28,10 @@ import FormItem from './Item';
 export default class ShowItem extends Vue {
     @Prop()
     private item?: FormItem;
+
+    public open(): void {
+        window.open((this.item as FormItem).art_url);
+    }
 }
 </script>
 
