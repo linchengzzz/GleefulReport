@@ -3,7 +3,6 @@ import qs from 'qs';
 import config from '../config/index';
 
 const apiHost = config.API_HOST;
-console.log(apiHost);
 const instance = axios.create({
     baseURL: apiHost,
     transformRequest: [(data) =>  qs.stringify(data)],

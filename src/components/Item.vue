@@ -11,12 +11,12 @@
             <FormItem label="文章封面:" prop="cover">
                 <Row>
                     <Col>
-                    <Upload :before-upload="handleUpload" action="/">
-                        <Button icon="ios-cloud-upload-outline">Upload files</Button>
-                    </Upload>
+                        <Upload :before-upload="handleUpload" action="/">
+                            <Button icon="ios-cloud-upload-outline">Upload files</Button>
+                        </Upload>
                     </Col>
                     <Col>
-                    <Input v-model="formItem.cover" placeholder="请上传图片（19：7）完成裁剪" style="width: 500px" disabled readonly></Input>
+                        <Input v-model="formItem.cover" placeholder="请上传图片（19：7）完成裁剪" style="width: 500px" disabled readonly></Input>
                     </Col>
                 </Row>
             </FormItem>
@@ -85,7 +85,6 @@ export default class Item extends Vue {
     public handleSave(name: string): void {
         (this.$refs.formdata as any).validate((val: boolean) => {
             if (val) {
-                this.change = !this.change;
                 if (this.formItem.cover.match(/base64/g)) {
                     UploadAPI.upload({
                         file: this.formItem.cover.split(',')[1],
@@ -98,13 +97,19 @@ export default class Item extends Vue {
                                 desc: '网络出错',
                             });
                         } else {
-                            const { file_id, url } = res.data.ret;
-                            console.log(file_id, url);
+                            const { url } = res.data.ret;
+                            this.formItem.cover = url;
+                            this.change = !this.change;
+                            if (this.change) {
+                                this.$emit('itemSave', this.formItem);
+                            }
                         }
                     });
-                }
-                if (this.change) {
-                    this.$emit('itemSave', this.formItem);
+                } else {
+                    this.change = !this.change;
+                    if (this.change) {
+                        this.$emit('itemSave', this.formItem);
+                    }
                 }
             }
         });
