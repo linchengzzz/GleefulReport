@@ -85,7 +85,7 @@ export default class Item extends Vue {
     public handleSave(name: string): void {
         (this.$refs.formdata as any).validate((val: boolean) => {
             if (val) {
-                if (this.formItem.cover.match(/base64/g)) {
+                if (this.formItem.cover.search(/base64/) > 0) {
                     UploadAPI.upload({
                         file: this.formItem.cover.split(',')[1],
                         group: this.group,
