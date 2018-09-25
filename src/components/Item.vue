@@ -11,12 +11,12 @@
             <FormItem label="文章封面:" prop="cover">
                 <Row>
                     <Col>
-                        <Upload :before-upload="handleUpload" action="/">
-                            <Button icon="ios-cloud-upload-outline">Upload files</Button>
-                        </Upload>
+                    <Upload :before-upload="handleUpload" action="/">
+                        <Button icon="ios-cloud-upload-outline">Upload files</Button>
+                    </Upload>
                     </Col>
                     <Col>
-                        <Input v-model="formItem.cover" placeholder="请上传图片（19：7）完成裁剪" style="width: 500px" disabled readonly></Input>
+                    <Input v-model="formItem.cover" placeholder="请上传图片（19：7）完成裁剪" style="width: 500px" disabled readonly></Input>
                     </Col>
                 </Row>
             </FormItem>
@@ -41,14 +41,7 @@
                 &nbsp;&nbsp;重置可清空当前项的数据
             </FormItem>
         </Form>
-        <Modal
-            title="编辑图片"
-            v-model="modal"
-            :closable="false"
-            :mask-closable="false"
-            @on-ok= "setImage"
-            @on-cancel="cancel"
-            width="630">
+        <Modal title="编辑图片" v-model="modal" :closable="false" :mask-closable="false" @on-ok="setImage" @on-cancel="cancel" width="630">
             <div class="img-box">
                 <canvas ref="canvas" id="canvas"></canvas>
             </div>
@@ -60,6 +53,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import FormItem from './Item';
 import Cropper from 'cropperjs';
+import { UploadAPI } from '../api/index';
 
 @Component
 export default class Item extends Vue {
@@ -77,12 +71,13 @@ export default class Item extends Vue {
         cover: [{ required: true, message: '图片是必填的', trigger: 'blur' }],
         title: [{ required: true, message: '标题是必填的', trigger: 'blur' }],
         author: [{ required: true, message: '作者是必填的', trigger: 'blur' }],
-        reading: [
-            { required: true, message: '阅读量是必填的', trigger: 'blur' },
-        ],
+        reading: [{ required: true, message: '阅读量是必填的', trigger: 'blur' }],
         art_url: [{ required: true, message: '链接是必填的', trigger: 'blur' }],
     };
-    @Prop() private itemID?: string;
+    @Prop()
+    private itemID?: string;
+    private extension: string = '';
+    private group: string = 'report';
     private change: boolean = false;
     private modal: boolean = false;
     private cropper?: Cropper;
@@ -91,6 +86,23 @@ export default class Item extends Vue {
         (this.$refs.formdata as any).validate((val: boolean) => {
             if (val) {
                 this.change = !this.change;
+                if (this.formItem.cover.match(/base64/g)) {
+                    UploadAPI.upload({
+                        file: this.formItem.cover.split(',')[1],
+                        group: this.group,
+                        ext: this.extension,
+                    }).then((res) => {
+                        if (res.data.err !== '0') {
+                            (this as any).$Notice.error({
+                                title: res.data.msg,
+                                desc: '网络出错',
+                            });
+                        } else {
+                            const { file_id, url } = res.data.ret;
+                            console.log(file_id, url);
+                        }
+                    });
+                }
                 if (this.change) {
                     this.$emit('itemSave', this.formItem);
                 }
@@ -99,6 +111,7 @@ export default class Item extends Vue {
     }
     public handleUpload(event: File) {
         const reader = new FileReader();
+        this.extension = event.name.split('.').pop() as string;
         reader.readAsDataURL(event);
         reader.onload = (e) => {
             const { result } = e.target as FileReader;
@@ -150,7 +163,9 @@ export default class Item extends Vue {
         this.formItem.formID = this.itemID || '0';
     }
     private setImage(): void {
-        this.formItem.cover = (this.cropper as Cropper).getCroppedCanvas().toDataURL('image/jpeg', 0.7);
+        this.formItem.cover = (this.cropper as Cropper)
+            .getCroppedCanvas()
+            .toDataURL('image/jpeg', 0.7);
         (this.cropper as Cropper).destroy();
     }
     private cancel(): void {
@@ -160,33 +175,33 @@ export default class Item extends Vue {
 </script>
 
 <style scoped lang='less'>
-    .item {
-        margin-left: 20px;
+.item {
+    margin-left: 20px;
+}
+.item-header {
+    background: #fff;
+    text-align: center;
+    font-size: 24px;
+    line-height: 24px;
+    height: 36px;
+}
+.img-box {
+    width: 600px;
+    height: 600px;
+    background: #cccc;
+    img {
+        width: 100%;
     }
-    .item-header {
-        background: #fff;
-        text-align: center;
-        font-size: 24px;
-        line-height: 24px;
-        height: 36px;
+}
+.cover {
+    width: 300px;
+    margin-left: 40px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+        width: 100%;
     }
-    .img-box {
-        width: 600px;
-        height: 600px;
-        background: #cccc;
-        img {
-            width: 100%;
-        }
-    }
-    .cover {
-        width: 300px;
-        margin-left: 40px;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        img {
-            width: 100%;
-        }
-    }
+}
 </style>
