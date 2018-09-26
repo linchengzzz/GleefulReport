@@ -1,3 +1,3 @@
 export default {
-    API_HOST: 'http://ares.beta.hqq.vip',
+    API_HOST: 'http://ares.hqq.vip',
 };
