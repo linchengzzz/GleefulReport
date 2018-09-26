@@ -65,6 +65,7 @@ export default class Item extends Vue {
         author: '',
         reading: '',
         art_url: '',
+        createTime: new Date().getTime(),
     };
     public rule = {
         id: [{ required: true, message: '编号是必填的', trigger: 'blur' }],

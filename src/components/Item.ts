@@ -6,4 +6,5 @@ export default interface FormItem {
     author: string;
     reading: string;
     art_url: string;
+    createTime: number;
 }

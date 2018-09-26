@@ -1,6 +1,9 @@
 <template>
     <div class="layout">
-        <Header class="header">货报生成工具</Header>
+        <Header class="header">
+            货报生成工具 v1.2.0
+            <ChangeLog class="change"></ChangeLog>
+        </Header>
         <Content class="content">
             <Row class="title">
                 <Col span="12">
@@ -43,19 +46,22 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import FormItem from '@/components/Item.ts';
 import Item from '@/components/Item.vue';
 import ShowItem from '@/components/ShowItem.vue';
-import FormItem from '../components/Item';
+import ChangeLog from '@/components/ChangeLog.vue';
 
 @Component({
     components: {
         Item,
         ShowItem,
+        ChangeLog,
     },
 })
 export default class Home extends Vue {
     public data: FormItem[] = [];
     public formItems: any = [];
+    public showChange: boolean = false;
     private height: number = 0 ;
     public itemSave(item: FormItem): void {
         const index = this.data.findIndex((dataItem) => dataItem.formID === item.formID);
@@ -64,7 +70,7 @@ export default class Home extends Vue {
             this.data = [...this.data];
         } else {
             const curItem = {...item};
-            this.data.push(curItem);
+            this.data.unshift(curItem);
         }
     }
     private addItem(): void {
@@ -108,6 +114,15 @@ export default class Home extends Vue {
     line-height: 64px;
     height: 64px;
     color: #fff;
+    &::after {
+        content: "";
+        display: block;
+        clear: both;
+        visibility: hidden;
+    }
+    .change{
+        float: right;
+    }
 }
 .content {
     width: 100%;
