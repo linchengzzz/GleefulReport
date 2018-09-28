@@ -4,6 +4,20 @@
         <Drawer title="更新日志" :closable="false" v-model="showChange">
             <Timeline>
                 <TimelineItem>
+                    <p class="time">v1.4.0</p>
+                    <p class="content">增加上传功能,选择响应项目即可上传。</p>
+                </TimelineItem>
+                <TimelineItem>
+                    <p class="time">v1.3.1</p>
+                    <p class="content">增加提示、警告功能。</p>
+                </TimelineItem>
+                <TimelineItem>
+                    <p class="time">v1.3.0</p>
+                    <p class="content">完成删除功能、清空功能。</p>
+                    <p class="content">完成缓存功能。</p>
+                    <p class="content">修改首页布局</p>
+                </TimelineItem>
+                <TimelineItem>
                     <p class="time">v1.2.0</p>
                     <p class="content">采用图片上传，减少JSON体积</p>
                     <p class="content">预览界面根据更新时间倒序排序</p>

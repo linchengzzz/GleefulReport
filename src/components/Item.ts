@@ -1,5 +1,4 @@
 export default interface FormItem {
-    formID: string;
     id: string;
     title: string;
     cover: string;

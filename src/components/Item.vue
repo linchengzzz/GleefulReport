@@ -1,6 +1,6 @@
 <template>
     <div class="item">
-        <Header class="item-header">第{{formItem.formID.match(/\d+/)[0]}}篇</Header>
+        <Header class="item-header">第{{itemIndex + 1}}篇</Header>
         <Form ref="formdata" :model="formItem" :rules="rule" :label-width="100">
             <FormItem label="文章编号:" prop="id">
                 <Input v-model="formItem.id" placeholder="请输入文章编号" style="width: 500px" :disabled="change" :readonly="change"></Input>
@@ -36,14 +36,26 @@
             </FormItem>
             <FormItem>
                 <Button type="primary" @click="handleSave('formdata')">{{change ? "修改" : "保存" }}</Button>
-                &nbsp;&nbsp;保存即可在右边预览效果
-                <Button @click="handleReset" style="margin-left: 8px" :disabled="change">重置</Button>
-                &nbsp;&nbsp;重置可清空当前项的数据
+                <Button type="error"  style="margin-left: 32px" @click="showDelModal">删除</Button>
+                <Button @click="handleReset" style="margin-left: 32px" :disabled="change">重置</Button>
             </FormItem>
         </Form>
         <Modal title="编辑图片" v-model="modal" :closable="false" :mask-closable="false" @on-ok="setImage" @on-cancel="cancel" width="630">
             <div class="img-box">
                 <canvas ref="canvas" id="canvas"></canvas>
+            </div>
+        </Modal>
+        <Modal v-model="delModal" width="360">
+            <p slot="header" style="color:#f60;text-align:center">
+                <Icon type="ios-information-circle"></Icon>
+                <span>确认删除？</span>
+            </p>
+            <div style="text-align:center">
+                <p>如果删除后，当前操作无法撤回</p>
+                <p>是否删除？</p>
+            </div>
+            <div slot="footer">
+                <Button type="error" size="large" long @click="remove">确认删除</Button>
             </div>
         </Modal>
     </div>
@@ -54,18 +66,18 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import FormItem from './Item';
 import Cropper from 'cropperjs';
 import { UploadAPI } from '../api/index';
+import * as Types from '@/store/types';
 
 @Component
 export default class Item extends Vue {
     public formItem: FormItem = {
-        formID: '',
         id: '',
         cover: '',
         title: '',
         author: '',
         reading: '',
         art_url: '',
-        createTime: new Date().getTime(),
+        createTime: 0,
     };
     public rule = {
         id: [{ required: true, message: '编号是必填的', trigger: 'blur' }],
@@ -76,11 +88,14 @@ export default class Item extends Vue {
         art_url: [{ required: true, message: '链接是必填的', trigger: 'blur' }],
     };
     @Prop()
-    private itemID?: string;
+    private item?: FormItem;
+    @Prop()
+    private itemIndex?: number;
     private extension: string = '';
     private group: string = 'report';
     private change: boolean = false;
     private modal: boolean = false;
+    private delModal: boolean = false;
     private cropper?: Cropper;
 
     public handleSave(name: string): void {
@@ -102,18 +117,25 @@ export default class Item extends Vue {
                             this.formItem.cover = url;
                             this.change = !this.change;
                             if (this.change) {
-                                this.$emit('itemSave', this.formItem);
+                                this.$store.commit(Types.ADD_REPORT_ITEM, this.formItem);
                             }
                         }
                     });
                 } else {
                     this.change = !this.change;
                     if (this.change) {
-                        this.$emit('itemSave', this.formItem);
+                        this.$store.commit(Types.ADD_REPORT_ITEM, this.formItem);
                     }
                 }
             }
         });
+    }
+    public showDelModal(): void {
+        this.delModal = true;
+    }
+    public remove(): void {
+        this.$store.commit(Types.DEL_REPORT_ITEM, this.formItem);
+        this.$store.commit(Types.DEL_CONTROL_ITEM, this.formItem);
     }
     public handleUpload(event: File) {
         const reader = new FileReader();
@@ -166,7 +188,7 @@ export default class Item extends Vue {
         this.formItem.art_url = '';
     }
     private created() {
-        this.formItem.formID = this.itemID || '0';
+        this.formItem = this.item as FormItem;
     }
     private setImage(): void {
         this.formItem.cover = (this.cropper as Cropper)
