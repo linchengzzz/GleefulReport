@@ -3,7 +3,7 @@
         <Header class="header">
             货报生成工具
             <div class="version">
-                <span>当前版本: v1.2.0</span>
+                <span>当前版本: v1.4.1</span>
                 &nbsp;&nbsp;
                 <ChangeLog></ChangeLog>
             </div>

@@ -4,6 +4,10 @@
         <Drawer title="更新日志" :closable="false" v-model="showChange">
             <Timeline>
                 <TimelineItem>
+                    <p class="time">v1.4.1</p>
+                    <p class="content">修改地址为线上地址。</p>
+                </TimelineItem>
+                <TimelineItem>
                     <p class="time">v1.4.0</p>
                     <p class="content">增加上传功能,选择响应项目即可上传。</p>
                 </TimelineItem>
